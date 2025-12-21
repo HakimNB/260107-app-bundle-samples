@@ -16,7 +16,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
  * limitations under the License.
  */
 plugins {
-    kotlin("jvm") version "1.3.72"
+    kotlin("jvm") version "2.3.0"
     id("java-gradle-plugin")
 }
 
@@ -26,8 +26,8 @@ repositories {
 }
 
 dependencies {
-    implementation("com.android.tools.build:gradle-api:4.1.1")
-    implementation("com.android.tools.build:gradle:4.1.1")
+    implementation("com.android.tools.build:gradle-api:8.13.2")
+    implementation("com.android.tools.build:gradle:8.13.2")
     implementation(kotlin("stdlib"))
     gradleApi()
 }
