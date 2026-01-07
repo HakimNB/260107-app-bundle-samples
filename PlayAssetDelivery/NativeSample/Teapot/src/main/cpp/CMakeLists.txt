@@ -24,10 +24,21 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Werror -fno-exceptions
 # Export ANativeActivity_onCreate() per https://github.com/android-ndk/ndk/issues/381.
 set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -u ANativeActivity_onCreate")
 
+# ---- START: New changes to find the package ----
+# Find the asset delivery library from the Gradle dependency.
+# This replaces the old manual path definitions.
+#find_package(com.google.android.play.asset-delivery REQUIRED)
+# ---- END: New changes ----
 
-get_filename_component(PLAY_CORE_NATIVE_SDK_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../../play-core-native-sdk ABSOLUTE)
-include(${PLAY_CORE_NATIVE_SDK_DIR}/playcore.cmake)
+#
+# Add a static library called "playcore"
+include(${PLAYCORE_LOCATION}/playcore.cmake)
 add_playcore_static_library()
+#
+
+# get_filename_component(PLAY_CORE_NATIVE_SDK_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../../play-core-native-sdk ABSOLUTE)
+# include(${PLAY_CORE_NATIVE_SDK_DIR}/playcore.cmake)
+# add_playcore_static_library()
 
 get_filename_component(commonDir ${CMAKE_CURRENT_SOURCE_DIR}/../../../../common ABSOLUTE)
 if ((NOT EXISTS ${commonDir}/third_party/stb) OR
@@ -58,10 +69,37 @@ set_target_properties(${PROJECT_NAME}
         CXX_STANDARD_REQUIRED YES
         CXX_EXTENSIONS NO
         )
+#target_include_directories(
+#        ${PROJECT_NAME} PRIVATE
+#        ${commonDir}
+#        ${PLAY_CORE_NATIVE_SDK_DIR}/include)
+
+# ---- START: Modified include directories ----
+# The old PLAY_CORE_NATIVE_SDK_DIR is no longer needed.
+# The find_package command provides the correct include path.
+#target_include_directories(
+#        ${PROJECT_NAME} PRIVATE
+#        ${commonDir}
+#        ${com.google.android.play.asset-delivery_INCLUDE_DIRS})
+# ---- END: Modified include directories ----
+
+#
+# Include the Play Core headers for your native library
 target_include_directories(
         ${PROJECT_NAME} PRIVATE
         ${commonDir}
-        ${PLAY_CORE_NATIVE_SDK_DIR}/include)
+        ${PLAYCORE_LOCATION}/include)
+#target_include_directories(main PRIVATE ${PLAYCORE_LOCATION}/include)
+#
 
 target_compile_options(${PROJECT_NAME} PRIVATE -Wno-unused-function)
+# target_link_libraries(${PROJECT_NAME} PRIVATE NdkHelper playcore)
+
+# ---- START: Modified link libraries ----
+# Link against the imported target from find_package instead of the old 'playcore'
+#target_link_libraries(${PROJECT_NAME} PRIVATE NdkHelper com.google.android.play.asset-delivery)
+# ---- END: Modified link libraries ----
+
+#
 target_link_libraries(${PROJECT_NAME} PRIVATE NdkHelper playcore)
+#

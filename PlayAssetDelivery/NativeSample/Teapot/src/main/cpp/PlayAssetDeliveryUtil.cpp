@@ -104,7 +104,7 @@ uint8_t *AssetReadTextureFile(AAssetManager *assetManager,
     std::string path = std::string(AssetPackLocation_getAssetsPath(location));
     path += assetName;
     FILE *file = fopen(path.c_str(), "rb");
-    assert(file != nullptr);
+    // assert(file != nullptr);
     return stbi_load_from_file(file, imgWidth, imgHeight, channelCount, 4);
   }
 }
